@@ -1,6 +1,7 @@
 const express = require('express')
 const db = require("../db")
 const router = express.Router()
+const ExpressError = require("../expressError")
 
 router.get('/', async (req, res, next) => {
     const result = await db.query(`SELECT * FROM invoices`)
@@ -66,7 +67,7 @@ router.get('/companies/:code', async (req, res, next) => {
         throw new ExpressError("Not Found", 404)
     }
 })
-})
+
 
 
 

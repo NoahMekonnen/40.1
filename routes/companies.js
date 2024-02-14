@@ -3,7 +3,6 @@ const db = require("../db")
 const ExpressError = require("../expressError")
 const router = express.Router()
 
-app.use(express.json())
 
 router.get('/', async (req,res,next)=>{
     const result = await db.query("SELECT * FROM companies")
@@ -54,8 +53,5 @@ router.delete('/:code', async (req,res,next) => {
     }
 })
 
-app.listen(3000, function () {
-    console.log('App on port 3000');
-})
 
 module.exports = router
