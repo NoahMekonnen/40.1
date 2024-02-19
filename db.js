@@ -4,9 +4,9 @@ const {Client} = require("pg")
 let DB_URI;
 
 if (process.env.NODE_ENV === "test") {
-  DB_URI = "postgresql:///users_test";
+  DB_URI = "postgresql:///biztime_test";
 } else {
-  DB_URI = "postgresql:///users";
+  DB_URI = "postgresql://noah:Godalone1.@localhost/biztime";
 }
 
 let db = new Client({
