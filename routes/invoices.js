@@ -59,7 +59,7 @@ router.get('/companies/:code', async (req, res, next) => {
     const code = req.params.code
     const result = db.query(`SELECT * FROM companies WHERE code=$1`, [code])
     if (result) {
-        const invoices = db.query(`SELECT * FROM invoices WHERE compt_code=$1`, [code])
+        const invoices = db.query(`SELECT id FROM invoices WHERE compt_code=$1`, [code])
         result.rows[0].invoices = invoices.rows
         return res.json({ company: result.rows[0] })
     }
