@@ -22,7 +22,7 @@ router.get('/:id', async (req, res, next) => {
 })
 
 router.post('/', async (req, res, next) => {
-    const { code, name, description } = req.body
+    const { compt_code, amt} = req.body
     const result = await db.query(`INSERT INTO invoices (compt_code,amt)
                                     VALUES ($1,$2) RETURNING id, comp_code, amt, paid, add_date, paid_date`
         , [compt_code, amt])
