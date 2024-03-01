@@ -4,67 +4,97 @@ const router = express.Router()
 const ExpressError = require("../expressError")
 
 router.get('/', async (req, res, next) => {
-    const result = await db.query(`SELECT * FROM invoices`)
-    return res.json({ invoice: result.rows })
+    try {
+        const result = await db.query(`SELECT * FROM invoices`)
+        return res.json({ invoices: result.rows })
+    } catch (e) {
+        return next(e)
+    }
 })
 
 router.get('/:id', async (req, res, next) => {
-    const id = req.params.id
-    const result = await db.query(`SELECT id,amt,paid,add_date,
+    try {
+        const id = req.params.id
+        const result = await db.query(`SELECT id,amt,paid,add_date,
                                  paid_date FROM invoices 
                                  WHERE id=$1`, [id])
-    if (result) {
-        return res.json({ invoice: result.rows[0] })
-    }
-    else {
-        throw new ExpressError("Not Found", 404)
+
+        const result2 = await db.query(`SELECT comp_code FROM invoices`)
+        const comp_code = result2.rows[0]
+
+        const company = await db.query(`SELECT code, name, description FROM companies WHERE code =$1`, [comp_code])
+        result.rows[0].company = company.rows[0]
+
+        if (result) {
+            return res.json({ invoice: result.rows[0] })
+        }
+        else {
+            throw new ExpressError("Not Found", 404)
+        }
+    } catch (e) {
+        return next(e)
     }
 })
 
 router.post('/', async (req, res, next) => {
-    const { compt_code, amt} = req.body
-    const result = await db.query(`INSERT INTO invoices (compt_code,amt)
+    try {
+        const { compt_code, amt } = req.body
+        const result = await db.query(`INSERT INTO invoices (compt_code,amt)
                                     VALUES ($1,$2) RETURNING id, comp_code, amt, paid, add_date, paid_date`
-        , [compt_code, amt])
-    return res.json({ company: result.rows[0] })
+            , [compt_code, amt])
+        return res.json({ company: result.rows[0] })
+    } catch (e) {
+        return next(e)
+    }
 })
 
 router.put('/:id', async (req, res, next) => {
-    const id = req.params.id
-    const { amt } = req.body
-    const result = await db.query(`UPDATE invoices SET amt=$1
+    try {
+        const id = req.params.id
+        const { amt } = req.body
+        const result = await db.query(`UPDATE invoices SET amt=$1
                                     WHERE id=$2 RETURNING *`
-        , [amt, id])
-    if (result) {
-        return res.json({ company: result.rows[0] })
+            , [amt, id])
+        if (result) {
+            return res.json({ company: result.rows[0] })
+        }
+        else {
+            throw new ExpressError("Not Found", 404)
+        }
+    } catch (e) {
+        return next(e)
     }
-    else {
-        throw new ExpressError("Not Found", 404)
-    }
-
 })
 
 router.delete('/:id', async (req, res, next) => {
-    const id = req.params.id
-    const result = await db.query(`DELETE FROM invoices WHERE id=$1`, [id])
-    if (result) {
-        return res.json({ status: "deleted" })
-    }
-    else {
-        throw new ExpressError("Not Found", 404)
+    try {
+        const id = req.params.id
+        const result = await db.query(`DELETE FROM invoices WHERE id=$1`, [id])
+        if (result) {
+            return res.json({ status: "deleted" })
+        }
+        else {
+            throw new ExpressError("Not Found", 404)
+        }
+    } catch (e) {
+        return next(e)
     }
 })
 
 router.get('/companies/:code', async (req, res, next) => {
-    const code = req.params.code
-    const result = await db.query(`SELECT * FROM companies WHERE code=$1`, [code])
-    if (result) {
-        const invoices = await db.query(`SELECT id FROM invoices WHERE compt_code=$1`, [code])
-        result.rows[0].invoices = invoices.rows
-        return res.json({ company: result.rows[0] })
-    }
-    else {
-        throw new ExpressError("Not Found", 404)
+    try {
+        const code = req.params.code
+        const result = await db.query(`SELECT * FROM companies WHERE code=$1`, [code])
+        if (result) {
+            const invoices = await db.query(`SELECT id FROM invoices WHERE compt_code=$1`, [code])
+            result.rows[0].invoices = invoices.rows
+            return res.json({ company: result.rows[0] })
+        }
+        else {
+            throw new ExpressError("Not Found", 404)
+        }
+    } catch (e) {
+        return next(e)
     }
 })
 
