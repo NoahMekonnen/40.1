@@ -51,11 +51,19 @@ router.post('/', async (req, res, next) => {
 router.put('/:id', async (req, res, next) => {
     try {
         const id = req.params.id
-        const { amt } = req.body
+        const { amt, paid } = req.body
         const result = await db.query(`UPDATE invoices SET amt=$1
                                     WHERE id=$2 RETURNING *`
             , [amt, id])
         if (result) {
+            if (paid){
+                db.query(`UPDATE invoices SET paid_date='03-02-2024'
+                WHERE id=$1 RETURNING *`,[id])
+            }
+            else{
+                db.query(`UPDATE invoices SET paid_date=NULL
+                WHERE id=$1 RETURNING *`,[id])
+            }
             return res.json({ company: result.rows[0] })
         }
         else {

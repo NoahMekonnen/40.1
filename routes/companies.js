@@ -2,6 +2,7 @@ const express = require("express")
 const db = require("../db")
 const ExpressError = require("../expressError")
 const router = express.Router()
+const slugify = require('slugify')
 
 
 router.get('/', async (req, res, next) => {
@@ -17,6 +18,9 @@ router.get('/:code', async (req, res, next) => {
     try {
         const code = req.params.code
         const result = await db.query("SELECT * FROM WHERE id=$1", [code])
+        const result2 = await db.query(`SELECT * FROM industries WHERE code=$1`,[code])
+        const industries = result2.rows
+        result.rows[0].industries = industries
         if (result) {
             return res.json({ company: result.rows[0] })
         }
@@ -32,7 +36,7 @@ router.post('/', async (req, res, next) => {
     try {
         const { code, name, description } = req.body
         const result = await db.query(`INSERT INTO companies (code)
-                                    VALUES ($1)`, [code])
+                                    VALUES ($1)`, [slugify(code,{strict:true})])
         return res.json({ company: { code: code, name: name, description: description } })
     } catch (e) {
         return next(e)
