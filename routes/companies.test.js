@@ -7,19 +7,20 @@ const db = require("../db")
 
 beforeEach(function(){
     db.query(`INSERT INTO companies (code,name)
-    VALUES (Apple,Apple Computers),(Micro,Microsoft)`)
+    VALUES ('Apple','Apple Computers'),('Micro','Microsoft')`)
 })
 
 afterEach(function(){
-    db.query(`DELETE FROM companies WHERE code=Apple`)
-    db.query(`DELETE FROM companies WHERE code=Micro`)
+    db.query(`DELETE FROM companies WHERE code='Apple'`)
+    db.query(`DELETE FROM companies WHERE code='Micro'`)
 })
 
 describe("GET /", function(){
     test("Get all the companies", async function(){
         const res = await request(app).get('/companies')
         expect(res.statusCode).toBe(200)
-        expect(res.body).toEqual({companies: [{code: "Apple",name: "Apple Computers"},{code: "Micro",name: "Microsoft"}]})
+        expect(res.body).toEqual({companies: [{code: "Apple",name: "Apple Computers",description:null},
+        {code: "Micro",name: "Microsoft", description:null}]})
     })
 })
 
@@ -27,7 +28,7 @@ describe("GET /:code", function(){
     test("Get one company", async function(){
         const res = await request(app).get('/companies/Apple')
         expect(res.statusCode).toBe(200)
-        expect(res.body).toEqual({company:{code: "Apple", name:"Apple Computers"}})
+        expect(res.body).toEqual({company:{code: "Apple", name:"Apple Computers", description:null}})
     })
 })
 

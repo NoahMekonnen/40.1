@@ -7,14 +7,14 @@ const db = require("../db")
 
 beforeEach(function(){
     db.query(`INSERT INTO companies (code,name)
-    VALUES (Apple,Apple Computers),(Micro,Microsoft)`)
+    VALUES ('Apple','Apple Computers'),('Micro','Microsoft')`)
     db.query(`INSERT INTO invoices (comp_code,amt,paid,add_date,paid_date)
-    VALUES (Apple,2500,true,10-07-2017,10-07-2018),(Micro,1500,false,10-04-2013)`)
+    VALUES ('Apple',2500,true,'2017-07-10','2018-07-10'),('Micro',1500,false,'2013-04-10','2013-07-10')`)
 })
 
 afterEach(function(){
-    db.query(`DELETE FROM companies WHERE code=Apple`)
-    db.query(`DELETE FROM companies WHERE code=Micro`)
+    db.query(`DELETE FROM companies WHERE code='Apple'`)
+    db.query(`DELETE FROM companies WHERE code='Micro'`)
 })
 
 describe("GET /", function(){
@@ -29,8 +29,8 @@ describe("GET /:id", function(){
     test("Get one invoice", async function(){
         const res = await request(app).get('/invoices/1')
         expect(res.statusCode).toBe(200)
-        expect(res.body).toEqual({invoice: [{id: 1, comp_code: "Apple", amt: 2500, paid: true, add_date: "10-07-2017",
-        paid_date: "10-07-2018" }]})
+        expect(res.body).toEqual({invoice: [{id: 1, comp_code: "Apple", amt: 2500, paid: true, add_date: "2017-07-10",
+        paid_date: "2018-10-07" }]})
     })
 })
 
@@ -38,7 +38,7 @@ describe("POST /", function(){
     test("Make an invoice", async function(){
         const res = await request(app).post('/invoices').send({compt_code: "Apple",amt: 500})
         expect(res.statusCode).toBe(200)
-        expect(res.body).toEqual({invoice: [{id: 3, comp_code: "Apple", amt: 500, paid: false, add_date: "03-01-2024"}]})
+        expect(res.body).toEqual({invoice: [{id: 3, comp_code: "Apple", amt: 500, paid: false, add_date: "2024-03-01"}]})
     })
 })
 
@@ -46,8 +46,8 @@ describe("PUT /:id", function(){
     test("Adjust an invoice", async function(){
         const res = await request(app).put('/invoices/1').send({amt: 2000})
         expect(res.statusCode).toBe(200)
-        expect(res.body).toEqual({invoice: [{id: 1, comp_code: "Apple", amt: 2000, paid: true, add_date: "10-07-2017",
-        paid_date: "10-07-2018" }]})
+        expect(res.body).toEqual({invoice: [{id: 1, comp_code: "Apple", amt: 2000, paid: true, add_date: "2017-10-07",
+        paid_date: "2018-10-07" }]})
     })
 })
 

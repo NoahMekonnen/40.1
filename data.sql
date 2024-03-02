@@ -23,16 +23,15 @@ CREATE TABLE invoices (
 );
 
 CREATE TABLE industries (
-    code text PRIMARY KEY
+    code text PRIMARY KEY,
     industry text NOT NULL UNIQUE
+);
 
-)
-
-CREATE TABLE companies_industries(
-    id serial PRIMARY KEY
-    industry text NOT NULL REFERENCES industries ON DELETE CASCADE
+CREATE TABLE companies_industries (
+    id serial PRIMARY KEY,
+    industry text NOT NULL REFERENCES "industries" ON DELETE CASCADE,
     company_code text NOT NULL REFERENCES companies ON DELETE CASCADE
-)
+);
 
 INSERT INTO companies
   VALUES ('apple', 'Apple Computer', 'Maker of OSX.'),
@@ -45,9 +44,9 @@ INSERT INTO invoices (comp_Code, amt, paid, paid_date)
          ('ibm', 400, false, null);
 
 INSERT INTO industries (code, industry)
-  VALUES ('acct','Accounting')
-         ('IT','Information Technology')
+  VALUES ('acct','Accounting'),
+         ('IT','Information Technology');
 
 INSERT INTO companies_industries (industry, company_code)
-  VALUES ('IT','apple')
-         ('IT','ibm')
+  VALUES ('IT','apple'),
+         ('IT','ibm');

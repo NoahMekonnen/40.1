@@ -19,9 +19,12 @@ router.get('/:code', async (req, res, next) => {
         const code = req.params.code
         const result = await db.query("SELECT * FROM WHERE id=$1", [code])
         const result2 = await db.query(`SELECT * FROM industries WHERE code=$1`,[code])
+        console.log("BYE")
         const industries = result2.rows
         result.rows[0].industries = industries
+        console.log(result)
         if (result) {
+            console.log(result.rows[0],"HII")
             return res.json({ company: result.rows[0] })
         }
         else {
