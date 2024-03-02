@@ -6,7 +6,6 @@ const ExpressError = require("../expressError")
 router.get('/', async (req, res, next) => {
     try {
         const result = await db.query(`SELECT id,comp_code FROM invoices`)
-        console.log(result.rows,"HII")
         return res.json({ invoices: result.rows })
     } catch (e) {
         return next(e)
@@ -39,11 +38,12 @@ router.get('/:id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
     try {
-        const { compt_code, amt } = req.body
-        const result = await db.query(`INSERT INTO invoices (compt_code,amt)
+        console.log("HIII")
+        const { comp_code, amt } = req.body
+        const result = await db.query(`INSERT INTO invoices (comp_code,amt)
                                     VALUES ($1,$2) RETURNING id, comp_code, amt, paid, add_date, paid_date`
-            , [compt_code, amt])
-        return res.json({ company: result.rows[0] })
+            , [comp_code, amt])
+        return res.json({ invoice : result.rows[0] })
     } catch (e) {
         return next(e)
     }
@@ -65,7 +65,7 @@ router.put('/:id', async (req, res, next) => {
                 db.query(`UPDATE invoices SET paid_date=NULL
                 WHERE id=$1 RETURNING *`,[id])
             }
-            return res.json({ company: result.rows[0] })
+            return res.json({ invoice: result.rows[0] })
         }
         else {
             throw new ExpressError("Not Found", 404)
@@ -95,8 +95,11 @@ router.get('/companies/:code', async (req, res, next) => {
         const code = req.params.code
         const result = await db.query(`SELECT * FROM companies WHERE code=$1`, [code])
         if (result) {
-            const invoices = await db.query(`SELECT id FROM invoices WHERE compt_code=$1`, [code])
-            result.rows[0].invoices = invoices.rows
+            const invoices = await db.query(`SELECT id FROM invoices WHERE comp_code=$1`, [code])
+            result.rows[0].invoices = []
+            for (let invoice of invoices.rows){
+                result.rows[0].invoices.push(invoice.id)
+            }
             return res.json({ company: result.rows[0] })
         }
         else {

@@ -17,14 +17,13 @@ router.get('/', async (req, res, next) => {
 router.get('/:code', async (req, res, next) => {
     try {
         const code = req.params.code
-        const result = await db.query("SELECT * FROM WHERE id=$1", [code])
+        const result = await db.query("SELECT * FROM companies WHERE code=$1", [code])
         const result2 = await db.query(`SELECT * FROM industries WHERE code=$1`,[code])
-        console.log("BYE")
+        
         const industries = result2.rows
         result.rows[0].industries = industries
-        console.log(result)
+        
         if (result) {
-            console.log(result.rows[0],"HII")
             return res.json({ company: result.rows[0] })
         }
         else {
@@ -38,8 +37,8 @@ router.get('/:code', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
     try {
         const { code, name, description } = req.body
-        const result = await db.query(`INSERT INTO companies (code)
-                                    VALUES ($1)`, [slugify(code,{strict:true})])
+        const result = await db.query(`INSERT INTO companies (code,name)
+                                    VALUES ($1,$2)`, [slugify(code,{strict:true}),name])
         return res.json({ company: { code: code, name: name, description: description } })
     } catch (e) {
         return next(e)

@@ -36,7 +36,7 @@ describe("POST /", function(){
     test("Make a company", async function(){
         const res = await request(app).post('/companies').send({code: "Guzik",name:"Guzik Inc.",description:"We make the best laundry machines"})
         expect(res.statusCode).toBe(200)
-        expect(res.body).toEqual({code: "Guzik",name:"Guzik Inc.",description:"We make the best laundry machines"})
+        expect(res.body).toEqual({company:{code: "Guzik",name:"Guzik Inc.",description:"We make the best laundry machines"}})
     })
 })
 
@@ -45,8 +45,8 @@ describe("PUT /:code", function(){
         const res = await request(app).put('/companies/Apple').send({name:"Apple Inc.", 
         description:"We make better computers than Microsoft"})
         expect(res.statusCode).toBe(200)
-        expect(res.body).toEqual({name:"Apple Inc.", 
-        description:"We make better computers than Microsoft"})
+        expect(res.body).toEqual({company:{code:'Apple', name:"Apple Inc.", 
+        description:"We make better computers than Microsoft"}})
     })
 })
 
